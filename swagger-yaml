@@ -105,6 +105,14 @@ components:
           type: string
           description: Last time-out of the day in 24-hour HH:mm format
           example: '18:00'
+        elapsedTime:
+          type: string
+          description: Elapsed time between time-in and time-out
+          example: '9:19'
+        workedHours:
+          type: number
+          description: Total hours from all tasks worked on that day
+          example: 8
         tasks:
           description: Array of tasks worked on that day
           type: array
@@ -114,6 +122,8 @@ components:
         - date
         - timeIn
         - timeOut
+        - elapsedTime
+        - workedHours
         - tasks
     TimesheetDto:
       type: object
