@@ -1,13 +1,8 @@
 import * as React from "react";
 import type { TimesheetDto } from "../lib/types";
-// Shadcn UI imports (adjust paths if needed)
 import { Table, TableHeader, TableRow, TableCell, TableBody } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-// If you have @radix-ui/react-icons installed, use these imports:
-// import { ChevronDownIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-// Otherwise, use a fallback:
-const ChevronDownIcon = () => <span style={{fontWeight: "bold"}}>▼</span>;
-const ChevronRightIcon = () => <span style={{fontWeight: "bold"}}>▶</span>;
+import { ChevronDownIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 
 interface TimesheetTableProps {
   timesheet: TimesheetDto;

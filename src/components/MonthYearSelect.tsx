@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 
 interface MonthYearSelectProps {
   value?: string; // YYYY-MM
@@ -28,8 +28,10 @@ function getMonthYearOptions(): { label: string; value: string }[] {
 export const MonthYearSelect: React.FC<MonthYearSelectProps> = ({ value, onChange }) => {
   const options = getMonthYearOptions();
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[200px]" />
+    <Select onValueChange={onChange}>
+      <SelectTrigger className="w-[200px]">
+        <SelectValue placeholder="Select a period" />
+      </SelectTrigger>
       <SelectContent>
         {options.map((opt) => (
           <SelectItem key={opt.value} value={opt.value}>
