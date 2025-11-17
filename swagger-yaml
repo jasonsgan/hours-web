@@ -1,0 +1,127 @@
+openapi: 3.0.0
+paths:
+  /health:
+    get:
+      operationId: AppController_health
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - App
+  /:
+    get:
+      operationId: AppController_getHello
+      parameters:
+        - name: name
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags:
+        - App
+  /timesheet/{username}/{year}/{month}:
+    get:
+      operationId: TimesheetController_getTimesheetByMonth
+      parameters:
+        - name: username
+          required: true
+          in: path
+          description: Username of the employee
+          schema:
+            example: bruce.wayne
+            type: string
+        - name: year
+          required: true
+          in: path
+          description: Four-digit year
+          schema:
+            example: '2025'
+            type: number
+        - name: month
+          required: true
+          in: path
+          description: Month of the year (1-12)
+          schema:
+            example: '9'
+            type: number
+      responses:
+        '200':
+          description: Timesheet data for the specified month
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetDto'
+      tags:
+        - Timesheet
+info:
+  title: API
+  description: API Documentation
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    TaskDto:
+      type: object
+      properties:
+        projectName:
+          type: string
+          description: Project name
+          example: Benoite
+        taskName:
+          type: string
+          description: Task name
+          example: Corporate event
+        hours:
+          type: number
+          description: Hours spent on the task
+          example: 4.5
+        taskDescription:
+          type: string
+          description: Additional information about the task
+          example: Attended Softcon 2025 conference
+      required:
+        - projectName
+        - taskName
+        - hours
+        - taskDescription
+    TimeLogDto:
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date in ISO format
+          example: '2025-09-15'
+        timeIn:
+          type: string
+          description: First time-in of the day in 24-hour HH:mm format
+          example: '09:00'
+        timeOut:
+          type: string
+          description: Last time-out of the day in 24-hour HH:mm format
+          example: '18:00'
+        tasks:
+          description: Array of tasks worked on that day
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDto'
+      required:
+        - date
+        - timeIn
+        - timeOut
+        - tasks
+    TimesheetDto:
+      type: object
+      properties:
+        timeLogs:
+          description: Array of time logs (daily time records)
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeLogDto'
+      required:
+        - timeLogs
