@@ -57,6 +57,21 @@ paths:
                 $ref: '#/components/schemas/TimesheetDto'
       tags:
         - Timesheet
+  /timesheet/{username}:
+    put:
+      operationId: TimesheetController_editTimesheet
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditTimesheetDto'
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Timesheet
 info:
   title: API
   description: API Documentation
@@ -97,6 +112,10 @@ components:
           type: string
           description: Date in ISO format
           example: '2025-09-15'
+        shift:
+          type: string
+          description: Shift type (e.g. Reg)
+          example: Reg
         timeIn:
           type: string
           description: First time-in of the day in 24-hour HH:mm format
@@ -105,6 +124,14 @@ components:
           type: string
           description: Last time-out of the day in 24-hour HH:mm format
           example: '18:00'
+        remarks:
+          type: string
+          description: General remarks
+          example: Other
+        overrideReason:
+          type: string
+          description: Reason for overriding time entries
+          example: WFH
         elapsedTime:
           type: string
           description: Elapsed time between time-in and time-out
@@ -113,6 +140,10 @@ components:
           type: number
           description: Total hours from all tasks worked on that day
           example: 8
+        weekend:
+          type: boolean
+          description: Returns true if a weekend, false otherwise
+          example: false
         tasks:
           description: Array of tasks worked on that day
           type: array
@@ -120,10 +151,14 @@ components:
             $ref: '#/components/schemas/TaskDto'
       required:
         - date
+        - shift
         - timeIn
         - timeOut
+        - remarks
+        - overrideReason
         - elapsedTime
         - workedHours
+        - weekend
         - tasks
     TimesheetDto:
       type: object
@@ -133,5 +168,44 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TimeLogDto'
+      required:
+        - timeLogs
+    EditTimeLogDto:
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date in ISO format
+          example: '2025-09-15'
+        timeIn:
+          type: string
+          description: First time-in of the day in 24-hour HH:mm format
+          example: '09:00'
+        timeOut:
+          type: string
+          description: Last time-out of the day in 24-hour HH:mm format
+          example: '18:00'
+        remarks:
+          type: string
+          description: General remarks
+          example: Other
+        overrideReason:
+          type: string
+          description: Reason for overriding time entries
+          example: WFH
+      required:
+        - date
+        - timeIn
+        - timeOut
+        - remarks
+        - overrideReason
+    EditTimesheetDto:
+      type: object
+      properties:
+        timeLogs:
+          description: Array of time logs (daily time records)
+          type: array
+          items:
+            $ref: '#/components/schemas/EditTimeLogDto'
       required:
         - timeLogs

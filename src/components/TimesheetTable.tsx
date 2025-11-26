@@ -1,11 +1,25 @@
 import * as React from "react";
-import type { TimesheetDto } from "../lib/types";
+import type { TimesheetDto, TimeLogDto } from "../lib/types";
 import { Table, TableHeader, TableRow, TableCell, TableBody } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 
 interface TimesheetTableProps {
   timesheet: TimesheetDto;
+}
+
+function displayRemarks(timeLog: TimeLogDto): string {
+  let result = "";
+  if (timeLog.remarks) {
+    result += `Remars: ${timeLog.remarks}`;
+  }
+  if (timeLog.overrideReason) {
+    if (result) {
+      result += "<br/>";
+    }
+    result += `Override Reason: ${timeLog.overrideReason}`; 
+  }
+  return result;
 }
 
 export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => {
@@ -34,7 +48,13 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => 
         <TableBody>
           {timesheet.timeLogs.map((log, idx) => (
             <React.Fragment key={idx}>
-              <TableRow className={expandedRows[idx] ? "bg-blue-100" : ""}>
+              <TableRow className={
+                expandedRows[idx]
+                  ? "bg-blue-100"
+                  : log.weekend
+                    ? "bg-gray-100"
+                    : ""
+              }>
                 <TableCell>
                   <Button
                     variant="ghost"
@@ -46,7 +66,7 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => 
                   </Button>
                 </TableCell>
                 <TableCell>{log.date}</TableCell>
-                <TableCell>Reg</TableCell>
+                <TableCell>{log.shift}</TableCell>
                 <TableCell>{log.timeIn}</TableCell>
                 <TableCell>{log.timeOut}</TableCell>
                 <TableCell>{log.elapsedTime}</TableCell>
@@ -57,7 +77,7 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => 
                   {/* Actions placeholder */}
                 </TableCell>
                 <TableCell>
-                  {/* Remarks placeholder */}
+                  {displayRemarks(log)}
                 </TableCell>
               </TableRow>
               {expandedRows[idx] && (
