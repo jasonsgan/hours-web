@@ -1,9 +1,11 @@
 export interface EditTimeLogDto {
   date: string;
+  shift: string;
   timeIn: string;
   timeOut: string;
   remarks: string;
   overrideReason: string;
+  weekend: boolean;
 }
 
 export interface EditTimesheetDto {
