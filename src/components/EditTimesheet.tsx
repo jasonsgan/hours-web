@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useMutation } from "@tanstack/react-query";
 import type { EditTimesheetDto, EditTimeLogDto } from "../lib/types";
 import {
   Dialog,
@@ -16,13 +17,15 @@ import {
   TableBody,
   TableHead,
 } from "@/components/ui/table";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+// Removed unused Select imports
 import { Input } from "@/components/ui/input";
+
 
 interface EditTimesheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   timesheet: EditTimesheetDto;
+  username?: string; // Needed for API call
 }
 
 const timeOptions = [
@@ -33,7 +36,19 @@ const timeOptions = [
 
 const shiftOptions = ["Reg"];
 
-export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange, timesheet }) => {
+export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange, timesheet, username = "bruce.wayne" }) => {
+        // Tanstack Query mutation for PUT /timesheet/{username}
+        const mutation = useMutation({
+          mutationFn: async (editLogs: EditTimeLogDto[]) => {
+            const res = await fetch(`http://localhost:8000/timesheet/${username}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ timeLogs: editLogs }),
+            });
+            if (!res.ok) throw new Error(`Failed to save timesheet: ${res.status}`);
+            //return res.json();
+          },
+        });
       // Initialize editable state from timesheet
   const [editLogs, setEditLogs] = React.useState<EditTimeLogDto[]>([]);
 
@@ -45,10 +60,10 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
     setEditLogs(timesheet.timeLogs.map((log: EditTimeLogDto) => ({
       date: log.date,
       shift: log.shift,
-      timeIn: log.timeIn || "-",
-      timeOut: log.timeOut || "-",
-      remarks: log.remarks || "",
-      overrideReason: log.overrideReason || "",
+      timeIn: log.timeIn,
+      timeOut: log.timeOut,
+      remarks: log.remarks,
+      overrideReason: log.overrideReason,
       weekend: log.weekend
     })));
     setManualTimeIn(timesheet.timeLogs.map(() => false));
@@ -67,11 +82,13 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
     else setManualTimeOut((prev) => prev.map((v, i) => i === idx ? checked : v));
   };
 
-  const handleSave = () => {
-    for (const log of editLogs) {
-      console.log(`Save date=${log.date}, timeIn=${log.timeIn}, timeOut=${log.timeOut}, remarks=${log.remarks}, overrideReason=${log.overrideReason}`);
+  const handleSave = async () => {
+    try {
+      await mutation.mutateAsync(editLogs);
+      onOpenChange(false);
+    } catch (err) {
+      alert("Failed to save timesheet. Please try again.");
     }
-    onOpenChange(false);
   };
 
   return (
@@ -105,7 +122,7 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
                         value={log.timeIn}
                         onChange={e => handleChange(idx, "timeIn", e.target.value)}
                         className="w-32"
-                        placeholder="hh:mm AM/PM"
+                        placeholder=""
                         disabled={manualTimeIn[idx]}
                       />
                       <label className="flex items-center gap-1 text-xs">
@@ -124,7 +141,7 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
                         value={log.timeOut}
                         onChange={e => handleChange(idx, "timeOut", e.target.value)}
                         className="w-32"
-                        placeholder="hh:mm AM/PM"
+                        placeholder=""
                         disabled={manualTimeOut[idx]}
                       />
                       <label className="flex items-center gap-1 text-xs">
@@ -163,8 +180,9 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             onClick={handleSave}
+            disabled={mutation.isPending}
           >
-            Save
+            {mutation.isPending ? "Saving..." : "Save"}
           </button>
         </DialogFooter>
       </DialogContent>

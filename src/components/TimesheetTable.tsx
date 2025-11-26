@@ -13,11 +13,11 @@ interface TimesheetTableProps {
 function displayRemarks(timeLog: TimeLogDto): string {
   let result = "";
   if (timeLog.remarks) {
-    result += `Remars: ${timeLog.remarks}`;
+    result += `Remarks: ${timeLog.remarks}`;
   }
   if (timeLog.overrideReason) {
     if (result) {
-      result += "<br/>";
+      result += " | ";
     }
     result += `Override Reason: ${timeLog.overrideReason}`; 
   }
