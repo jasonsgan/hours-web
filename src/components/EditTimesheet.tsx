@@ -21,34 +21,28 @@ import {
 import { Input } from "@/components/ui/input";
 
 
+const MOCK_USERNAME = "bruce.wayne";
+
 interface EditTimesheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  timesheet: EditTimesheetDto;
-  username?: string; // Needed for API call
+  refetch: () => void;
+  timesheet: EditTimesheetDto
 }
 
-const timeOptions = [
-  "-",
-  "7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "9:00 AM", "9:30 AM", "10:00 AM",
-  "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM"
-];
-
-const shiftOptions = ["Reg"];
-
-export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange, timesheet, username = "bruce.wayne" }) => {
-        // Tanstack Query mutation for PUT /timesheet/{username}
-        const mutation = useMutation({
-          mutationFn: async (editLogs: EditTimeLogDto[]) => {
-            const res = await fetch(`http://localhost:8000/timesheet/${username}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ timeLogs: editLogs }),
-            });
-            if (!res.ok) throw new Error(`Failed to save timesheet: ${res.status}`);
-            //return res.json();
-          },
-        });
+export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange, timesheet, refetch }) => {
+  // Tanstack Query mutation for PUT /timesheet/{username}
+  const mutation = useMutation({
+    mutationFn: async (editLogs: EditTimeLogDto[]) => {
+      const res = await fetch(`http://localhost:8000/timesheet/${MOCK_USERNAME}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ timeLogs: editLogs }),
+      });
+      if (!res.ok) throw new Error(`Failed to save timesheet: ${res.status}`);
+      //return res.json();
+    },
+  });
       // Initialize editable state from timesheet
   const [editLogs, setEditLogs] = React.useState<EditTimeLogDto[]>([]);
 
@@ -85,6 +79,7 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
   const handleSave = async () => {
     try {
       await mutation.mutateAsync(editLogs);
+      refetch();
       onOpenChange(false);
     } catch (err) {
       alert("Failed to save timesheet. Please try again.");
@@ -96,7 +91,7 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
       <DialogContent className="sm:max-w-xl md:max-w-4xl lg:max-w-5xl">
         <DialogHeader>
           <DialogTitle>
-            <div className="bg-orange-500 text-white px-4 py-2 rounded-t-lg text-lg font-bold">Edit Timelogs</div>
+            <div className="bg-blue-700 text-white px-4 py-2 rounded-t-lg text-lg font-bold">Edit Time Logs</div>
           </DialogTitle>
         </DialogHeader>
         <div className="overflow-x-auto">
@@ -113,7 +108,7 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
             </TableHeader>
             <TableBody>
               {editLogs.map((log, idx) => (
-                <TableRow key={log.date} className={log.weekend ? "bg-blue-200" : ""}>
+                <TableRow key={log.date} className={log.weekend ? "bg-gray-100" : ""}>
                   <TableCell>{log.date}</TableCell>
                   <TableCell>{log.shift}</TableCell>
                   <TableCell>

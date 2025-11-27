@@ -41,7 +41,7 @@ export const Timesheet: React.FC = () => {
         />
       </div>
       {query.isLoading && <div className="text-muted">Loading timesheet...</div>}
-      {query.data && <TimesheetTable timesheet={query.data} />}
+      {query.data && <TimesheetTable timesheet={query.data} refetch={query.refetch} />}
       {!query.isLoading && !query.data && <div className="text-muted">Select a period to view timesheet.</div>}
     </div>
   );

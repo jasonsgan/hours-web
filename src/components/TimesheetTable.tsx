@@ -1,13 +1,14 @@
 import * as React from "react";
 import type { TimesheetDto, TimeLogDto } from "../lib/types";
 import { EditTimesheet } from "./EditTimesheet";
-import { Table, TableHeader, TableRow, TableCell, TableBody } from "@/components/ui/table";
+import { Table, TableHeader, TableHead, TableRow, TableCell, TableBody } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { formatDate, getMonday, getSunday } from "../lib/date.utils";
 
 interface TimesheetTableProps {
   timesheet: TimesheetDto;
+  refetch: () => void;
 }
 
 function displayRemarks(timeLog: TimeLogDto): string {
@@ -24,7 +25,7 @@ function displayRemarks(timeLog: TimeLogDto): string {
   return result;
 }
 
-export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => {
+export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet, refetch }) => {
   const [expandedRows, setExpandedRows] = React.useState<Record<number, boolean>>({});
   const [editOpen, setEditOpen] = React.useState(false);
   const [editWeekTimesheet, setEditWeekTimesheet] = React.useState<TimesheetDto | null>(null);
@@ -54,28 +55,22 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => 
       <div className="rounded-lg border bg-background p-4 shadow">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted">
-              <TableCell></TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Shift</TableCell>
-              <TableCell>Time In</TableCell>
-              <TableCell>Time Out</TableCell>
-              <TableCell>Elapsed Time (hh:mm)</TableCell>
-              <TableCell>Total Work Hours</TableCell>
-              <TableCell>Actions</TableCell>
-              <TableCell>Remarks</TableCell>
+            <TableRow className="bg-gray-300">
+              <TableHead></TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Shift</TableHead>
+              <TableHead>Time In</TableHead>
+              <TableHead>Time Out</TableHead>
+              <TableHead>Elapsed Time (hh:mm)</TableHead>
+              <TableHead>Total Work Hours</TableHead>
+              <TableHead>Actions</TableHead>
+              <TableHead>Remarks</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {timesheet.timeLogs.map((log, idx) => (
               <React.Fragment key={idx}>
-                <TableRow className={
-                  expandedRows[idx]
-                    ? "bg-blue-100"
-                    : log.weekend
-                      ? "bg-gray-100"
-                      : ""
-                }>
+                <TableRow className={log.weekend ? "bg-gray-100" : ""}>
                   <TableCell>
                     <Button
                       variant="ghost"
@@ -99,9 +94,7 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => 
                   <TableCell>{log.timeIn}</TableCell>
                   <TableCell>{log.timeOut}</TableCell>
                   <TableCell>{log.elapsedTime}</TableCell>
-                  <TableCell>
-                    <span className="px-2 py-1 rounded bg-blue-500 text-white font-bold">{log.workedHours}</span>
-                  </TableCell>
+                  <TableCell>{log.workedHours}</TableCell>
                   <TableCell>
                     {/* Actions placeholder */}
                   </TableCell>
@@ -115,7 +108,7 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => 
                       <div className="overflow-x-auto">
                         <Table className="w-full mt-2">
                           <TableHeader>
-                            <TableRow className="bg-muted">
+                            <TableRow className="bg-blue-100">
                               <TableCell>Project</TableCell>
                               <TableCell>Task</TableCell>
                               <TableCell>DA Type</TableCell>
@@ -125,7 +118,7 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => 
                           </TableHeader>
                           <TableBody>
                             {log.tasks.map((task, tIdx) => (
-                              <TableRow key={tIdx} className={tIdx % 2 === 1 ? "bg-gray-100" : ""}>
+                              <TableRow key={tIdx}>
                                 <TableCell>{task.projectName}</TableCell>
                                 <TableCell>{task.taskName}</TableCell>
                                 <TableCell>Normal</TableCell>
@@ -149,6 +142,7 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => 
           open={editOpen}
           onOpenChange={setEditOpen}
           timesheet={editWeekTimesheet}
+          refetch={refetch}
         />
       )}
     </>
