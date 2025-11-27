@@ -19,7 +19,7 @@ function getMonthYearOptions(): { label: string; value: string }[] {
       const date = new Date(year, month, 1);
       const label = date.toLocaleString("default", { month: "long", year: "numeric" });
       const value = `${year}-${String(month + 1).padStart(2, "0")}`;
-      options.push({ label, value });
+      options.unshift({ label, value });
     }
   }
   return options;
