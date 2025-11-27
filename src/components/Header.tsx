@@ -18,7 +18,7 @@ export default function Header() {
         </button>
         <h1 className="ml-4 text-xl font-semibold">
           <Link to="/">
-          Hours by Pointwest
+          <span className="font-bold">HOURS</span> by Pointwest
           </Link>
         </h1>
       </header>
