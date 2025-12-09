@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useMutation } from "@tanstack/react-query";
 import type { EditTimesheetDto, EditTimeLogDto } from "../lib/types";
 import {
   Dialog,
@@ -19,9 +18,7 @@ import {
 } from "@/components/ui/table";
 // Removed unused Select imports
 import { Input } from "@/components/ui/input";
-
-
-const MOCK_USERNAME = "bruce.wayne";
+import { useTimesheetMutation } from '../hooks/useTimesheet';
 
 interface EditTimesheetProps {
   open: boolean;
@@ -32,17 +29,10 @@ interface EditTimesheetProps {
 
 export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange, timesheet, refetch }) => {
   // Tanstack Query mutation for PUT /timesheet/{username}
-  const mutation = useMutation({
-    mutationFn: async (editLogs: EditTimeLogDto[]) => {
-      const res = await fetch(`http://localhost:8000/timesheet/${MOCK_USERNAME}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ timeLogs: editLogs }),
-      });
-      if (!res.ok) throw new Error(`Failed to save timesheet: ${res.status}`);
-      //return res.json();
-    },
+  const mutation = useTimesheetMutation(() => {
+    onOpenChange(false);
   });
+  
       // Initialize editable state from timesheet
   const [editLogs, setEditLogs] = React.useState<EditTimeLogDto[]>([]);
 
@@ -79,8 +69,6 @@ export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange
   const handleSave = async () => {
     try {
       await mutation.mutateAsync(editLogs);
-      refetch();
-      onOpenChange(false);
     } catch (err) {
       alert("Failed to save timesheet. Please try again.");
     }
