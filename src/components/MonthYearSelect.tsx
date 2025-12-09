@@ -25,7 +25,7 @@ function getMonthYearOptions(): { label: string; value: string }[] {
   return options;
 }
 
-export const MonthYearSelect: React.FC<MonthYearSelectProps> = ({ value, onChange }) => {
+export const MonthYearSelect: React.FC<MonthYearSelectProps> = ({ onChange }) => {
   const options = getMonthYearOptions();
   return (
     <Select onValueChange={onChange}>

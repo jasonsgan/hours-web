@@ -25,7 +25,7 @@ function displayRemarks(timeLog: TimeLogDto): string {
   return result;
 }
 
-export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet, refetch }) => {
+export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet }) => {
   const [expandedRows, setExpandedRows] = React.useState<Record<number, boolean>>({});
   const [editOpen, setEditOpen] = React.useState(false);
   const [editWeekTimesheet, setEditWeekTimesheet] = React.useState<TimesheetDto | null>(null);
@@ -142,7 +142,6 @@ export const TimesheetTable: React.FC<TimesheetTableProps> = ({ timesheet, refet
           open={editOpen}
           onOpenChange={setEditOpen}
           timesheet={editWeekTimesheet}
-          refetch={refetch}
         />
       )}
     </>

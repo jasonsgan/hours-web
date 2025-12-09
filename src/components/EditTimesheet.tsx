@@ -23,11 +23,10 @@ import { useTimesheetMutation } from '../hooks/useTimesheet';
 interface EditTimesheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  refetch: () => void;
   timesheet: EditTimesheetDto
 }
 
-export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange, timesheet, refetch }) => {
+export const EditTimesheet: React.FC<EditTimesheetProps> = ({ open, onOpenChange, timesheet }) => {
   // Tanstack Query mutation for PUT /timesheet/{username}
   const mutation = useTimesheetMutation(() => {
     onOpenChange(false);
